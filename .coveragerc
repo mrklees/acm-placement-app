@@ -1,0 +1,5 @@
+[run]
+include = acm_placement_app/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
