@@ -15,8 +15,13 @@ urlpatterns = [
     # User management
     path("users/", include("acm_placement_app.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Your stuff: custom urls includes go here
+urlpatterns += [
+    path("placements/", include("acm_placement_app.placements.urls", namespace="placements")),
+]
+
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

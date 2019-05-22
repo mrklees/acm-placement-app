@@ -69,10 +69,12 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "rest_framework",
+    'formtools',
 ]
 LOCAL_APPS = [
     "acm_placement_app.users.apps.UsersConfig",
     # Your stuff: custom apps go here
+    'acm_placement_app.placements.apps.PlacementConfig',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
