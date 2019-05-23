@@ -8,9 +8,6 @@ from formtools.wizard.views import SessionWizardView
 from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
     PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm
 
-BLANK_COLS_WARNING_MSG = """Warning: the following columns could not be resolved from your survey file. 
-These columns will be filled with blanks if you choose to continue:"""
-
 FORMS = [
     ('school_data_form', PlacementsRequestSchoolDataForm),
     ('acm_survey_data_form', PlacementsRequestACMSurveyDataForm),
@@ -26,16 +23,6 @@ TEMPLATES = {
 }
 
 
-def validate_acm_survey_data_file(acm_survey_data_file):
-    warnings = {}
-
-    if True:
-        warnings['message'] = BLANK_COLS_WARNING_MSG
-        warnings['list'] = ['Race.Ethnicity.East.Asian', 'Roommate.Name1']
-
-    return warnings
-
-
 class PlacementsRequestWizard(SessionWizardView):
     form_list = FORMS
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp', 'wizard'))
@@ -46,11 +33,11 @@ class PlacementsRequestWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         current_step = self.steps.current
-        # self.get_form(step=current_step, data=self.storage.get_step_data(current_step),
-        #               files=self.storage.get_step_files(current_step)).instance
         if current_step == 'run_parameters_form':
-            acm_survey_data_file = self.storage.get_step_files('acm_survey_data_form')
-            context['warnings'] = validate_acm_survey_data_file(acm_survey_data_file)
+            acm_survey_data_form = self.get_form(step='acm_survey_data_form',
+                                                 data=self.storage.get_step_data('acm_survey_data_form'),
+                                                 files=self.storage.get_step_files('acm_survey_data_form'))
+            context['warnings'] = acm_survey_data_form.get_warnings()
 
         return context
 
