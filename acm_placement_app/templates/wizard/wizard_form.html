@@ -7,6 +7,26 @@
 {% endblock %}
 
 {% block content %}
+  {% if warnings %}
+    <div class="alert alert-warning" role="alert">
+      <p>{{ warnings.message }}</p>
+      <ul>
+        {% for item in warnings.list %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      <form method="post">
+        <p>You can choose to go back and re-upload the survey file</p>
+        <button class="btn btn-secondary"
+                name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
+                onclick="return confirm('Are you sure you want to to go back?');"
+        >
+          {% trans "Back" %}
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
   <h3>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}: {% block step_name %}{% endblock %}</h3>
 
   {% block help %}{% endblock %}
