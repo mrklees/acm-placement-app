@@ -21,8 +21,10 @@
 <div class="row">
 
   <div class="col-sm-12">
-    <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
-    <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">E-Mail</a>
+    <ul>
+      <li><a href="{% url 'users:update' %}">Name</a></li>
+      <li><a href="{% url 'account_email' %}">Emails</a></li>
+    </ul>
     <!-- Your Stuff: Custom user template urls -->
   </div>
 
