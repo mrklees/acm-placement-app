@@ -1,8 +1,10 @@
 import os
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from formtools.wizard.views import SessionWizardView
 
 from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
@@ -23,6 +25,7 @@ TEMPLATES = {
 }
 
 
+@method_decorator(login_required, name='dispatch')
 class PlacementsRequestWizard(SessionWizardView):
     form_list = FORMS
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp', 'wizard'))
@@ -42,7 +45,9 @@ class PlacementsRequestWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        placementsrequest = get_placementrequest_instance_from_form_list(form_list)
+        placementsrequest = get_placementrequest_instance_from_form_list(form_list, commit=False)
+        placementsrequest.requested_by = self.request.user
+        placementsrequest.save()
         # run_procedure.delay(placementsrequest.id)
         return render(self.request, "wizard/done.html")
 

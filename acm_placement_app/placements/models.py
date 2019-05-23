@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 from model_utils.models import TimeStampedModel
 
@@ -9,6 +10,8 @@ def get_tomorrow_date():
 
 
 class PlacementsRequest(TimeStampedModel, models.Model):
+    requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+
     school_data_file = models.FileField(upload_to='data/inputs/school_data/')
     acm_survey_data_file = models.FileField("ACM survey data file", upload_to='data/inputs/acm_survey_data/')
 
