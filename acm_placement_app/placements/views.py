@@ -2,7 +2,6 @@ import os
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
 from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
@@ -43,11 +42,12 @@ class PlacementsRequestWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        get_placementrequest_instance_from_form_list(form_list).save()
+        placementsrequest = get_placementrequest_instance_from_form_list(form_list)
+        # run_procedure.delay(placementsrequest.id)
         return render(self.request, "wizard/done.html")
 
 
-def get_placementrequest_instance_from_form_list(form_list):
+def get_placementrequest_instance_from_form_list(form_list, commit=True):
     school_data_form, acm_survey_data_form, run_parameters_form, factor_importance_form = form_list
     placementsrequest = run_parameters_form.save(commit=False)
 
@@ -60,4 +60,10 @@ def get_placementrequest_instance_from_form_list(form_list):
         for field_name in FACTOR_IMPORTANCE_FIELDS:
             setattr(placementsrequest, field_name, factor_importance_form.cleaned_data[field_name])
 
+    if run_parameters_form.is_valid():
+        if run_parameters_form.cleaned_data['commutes_reference']:
+            placementsrequest.commute_factor = 0
+
+    if commit:
+        placementsrequest.save()
     return placementsrequest
