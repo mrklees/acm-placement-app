@@ -48,8 +48,10 @@ html {
   overflow-y: scroll;
 }
 
-.wizard-container {
-  width: 525px;
-  margin-left: auto;
-  margin-right: auto;
+body > .container {
+  max-width: 555px;
+}
+
+body > .mb-1 {
+  margin-bottom: 0 !important;
 }
