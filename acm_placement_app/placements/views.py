@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
+from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
 from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
@@ -55,4 +56,4 @@ class PlacementsRequestWizard(SessionWizardView):
 
         placementsrequest.save()
 
-        return HttpResponse("Done!")
+        return render(self.request, "wizard/done.html")
