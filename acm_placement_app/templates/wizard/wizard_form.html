@@ -24,15 +24,28 @@
         {{ wizard.form|crispy }}
       {% endif %}
     </div>
-    {% if wizard.steps.prev %}
-{#        <button name="wizard_goto_step" class="btn btn-secondary" type="submit" value="{{ wizard.steps.prev }}">{% trans "Back" %}</button>#}
-    {% endif %}
+    <div class="form-buttons">
+      {% if wizard.steps.prev %}
+          <button class="btn btn-danger"
+                  name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"
+                  onclick="return confirm('Are you sure you want reset this form?');"
+          >
+            {% trans "Go to beginning" %}
+          </button>
+          <button class="btn btn-secondary"
+                  name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
+                  onclick="return confirm('Are you sure you want to to go back?');"
+          >
+            {% trans "Back" %}
+          </button>
+      {% endif %}
 
-    {% if wizard.steps.current == wizard.steps.last %}
-      <input type="submit" class="btn btn-success float-right" value="{% trans "Submit" %}"/>
-    {% else %}
-      <input type="submit" class="btn btn-primary float-right" value="{% trans "Next" %}"/>
-    {% endif %}
+      {% if wizard.steps.current == wizard.steps.last %}
+        <input type="submit" class="btn btn-success float-right" value="{% trans "Submit" %}"/>
+      {% else %}
+        <input type="submit" class="btn btn-primary float-right" value="{% trans "Next" %}"/>
+      {% endif %}
+    </div>
   </form>
 {% endblock %}
 
