@@ -29,6 +29,13 @@ class PlacementsRequestRunParametersForm(forms.ModelForm):
             'calc_commutes',
             'commute_date',
             'commutes_reference',
+        ]
+
+
+class PlacementsRequestFactorImportanceForm(forms.ModelForm):
+    class Meta:
+        model = PlacementsRequest
+        fields = [
             'commute_factor',
             'ethnicity_factor',
             'gender_factor',

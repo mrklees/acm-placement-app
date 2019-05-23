@@ -10,13 +10,13 @@ def get_tomorrow_date():
 
 class PlacementsRequest(TimeStampedModel, models.Model):
     school_data_file = models.FileField(upload_to='data/inputs/school_data/')
-    acm_survey_data_file = models.FileField(upload_to='data/inputs/acm_survey_data/')
+    acm_survey_data_file = models.FileField("ACM survey data file", upload_to='data/inputs/acm_survey_data/')
 
     num_iterations = models.IntegerField(
-        'Number of iterations', default=10000,
+        "Number of iterations", default=10000,
         help_text="The number of team placements that will be attempted. 10,000 or more is recommended."
     )
-    prevent_roommates = models.BooleanField('Prevent roommates from serving on the same team?', default=True)
+    prevent_roommates = models.BooleanField("Prevent roommates from serving on the same team?", default=True)
     consider_HS_elig = models.BooleanField(
         "Apply High School eligibility rule?", default=True,
         help_text="ACMs are eligible to serve in High School if they are 21+ years old (or have college experience) "

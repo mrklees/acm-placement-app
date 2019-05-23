@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+  {{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+  <h3>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}: {% block step_name %}{% endblock %}</h3>
+
+  {% block help %}{% endblock %}
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div>
+      {{ wizard.management_form }}
+      {% if wizard.form.forms %}
+        {{ wizard.form.management_form }}
+        {% for form in wizard.form.forms %}
+            {{ form|crispy }}
+        {% endfor %}
+      {% else %}
+        {{ wizard.form|crispy }}
+      {% endif %}
+    </div>
+    {% if wizard.steps.prev %}
+      <button name="wizard_goto_step" class="btn" type="submit" value="{{ wizard.steps.first }}">{% trans "Clear form" %}</button>
+      <button name="wizard_goto_step" class="btn btn-secondary" type="submit" value="{{ wizard.steps.prev }}">{% trans "Back" %}</button>
+    {% endif %}
+
+    {% if wizard.steps.current == wizard.steps.last %}
+      <input type="submit" class="btn btn-success float-right" value="{% trans "Submit" %}"/>
+    {% else %}
+      <input type="submit" class="btn btn-primary float-right" value="{% trans "Next" %}"/>
+    {% endif %}
+  </form>
+{% endblock %}
+
+
