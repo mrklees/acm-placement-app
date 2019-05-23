@@ -16,14 +16,16 @@
         {% endfor %}
       </ul>
       <form method="post">{% csrf_token %}
-        <p>You can choose to go back and re-upload the survey file</p>
+        <p>
+          You can choose to go back and re-upload the survey file.
+          If you'd like to continue, scroll down and fill the rest of the form
+        </p>
         <button class="btn btn-secondary"
                 name="wizard_goto_step"  type="submit" value="{{ wizard.steps.prev }}"
                 onclick="return confirm('Are you sure you want to to go back?');"
         >
           {% trans "Back" %}
         </button>
-        <a class="btn btn-primary" href="#header">Continue</a>
       </form>
     </div>
   {% endif %}
