@@ -15,19 +15,20 @@
           <li>{{ item }}</li>
         {% endfor %}
       </ul>
-      <form method="post">
+      <form method="post">{% csrf_token %}
         <p>You can choose to go back and re-upload the survey file</p>
         <button class="btn btn-secondary"
-                name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
+                name="wizard_goto_step"  type="submit" value="{{ wizard.steps.prev }}"
                 onclick="return confirm('Are you sure you want to to go back?');"
         >
           {% trans "Back" %}
         </button>
+        <a class="btn btn-primary" href="#header">Continue</a>
       </form>
     </div>
   {% endif %}
 
-  <h3>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}: {% block step_name %}{% endblock %}</h3>
+  <h3 id="header">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}: {% block step_name %}{% endblock %}</h3>
 
   {% block help %}{% endblock %}
 
@@ -46,18 +47,19 @@
     </div>
     <div class="form-buttons">
       {% if wizard.steps.prev %}
-          <button class="btn btn-danger"
-                  name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"
-                  onclick="return confirm('Are you sure you want reset this form?');"
-          >
-            {% trans "Go to beginning" %}
-          </button>
-          <button class="btn btn-secondary"
-                  name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
-                  onclick="return confirm('Are you sure you want to to go back?');"
-          >
-            {% trans "Back" %}
-          </button>
+        <button class="btn btn-danger"
+                name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
+                onclick="return confirm('Are you sure you want reset this form?');"
+        >
+          {% trans "Go to beginning" %}
+        </button>
+        <button class="btn btn-secondary"
+                name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"
+                onclick="return confirm('Are you sure you want to to go back?');"
+        >
+          {% trans "Back" %}
+        </button>
+
       {% endif %}
 
       {% if wizard.steps.current == wizard.steps.last %}
