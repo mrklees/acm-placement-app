@@ -7,7 +7,7 @@ from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
 from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
-    PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm
+    PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm, FACTOR_IMPORTANCE_FIELDS
 
 FORMS = [
     ('school_data_form', PlacementsRequestSchoolDataForm),
@@ -43,17 +43,21 @@ class PlacementsRequestWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        school_data_form, acm_survey_data_form, run_parameters_form, factor_importance_form = form_list
-        placementsrequest = run_parameters_form.instance
-        placementsrequest.school_data_file = school_data_form.instance.school_data_file
-        placementsrequest.acm_survey_data_file = acm_survey_data_form.instance.acm_survey_data_file
-
-        placementsrequest.commute_factor = factor_importance_form.instance.commute_factor
-        placementsrequest.ethnicity_factor = factor_importance_form.instance.ethnicity_factor
-        placementsrequest.gender_factor = factor_importance_form.instance.gender_factor
-        placementsrequest.edscore_factor = factor_importance_form.instance.edscore_factor
-        placementsrequest.spanish_factor = factor_importance_form.instance.spanish_factor
-
-        placementsrequest.save()
-
+        get_placementrequest_instance_from_form_list(form_list).save()
         return render(self.request, "wizard/done.html")
+
+
+def get_placementrequest_instance_from_form_list(form_list):
+    school_data_form, acm_survey_data_form, run_parameters_form, factor_importance_form = form_list
+    placementsrequest = run_parameters_form.save(commit=False)
+
+    # Uploaded files
+    placementsrequest.school_data_file = school_data_form.instance.school_data_file
+    placementsrequest.acm_survey_data_file = acm_survey_data_form.instance.acm_survey_data_file
+
+    # Factor importances
+    if factor_importance_form.is_valid():
+        for field_name in FACTOR_IMPORTANCE_FIELDS:
+            setattr(placementsrequest, field_name, factor_importance_form.cleaned_data[field_name])
+
+    return placementsrequest

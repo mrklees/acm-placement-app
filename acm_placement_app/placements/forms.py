@@ -5,6 +5,14 @@ from django import forms
 
 from acm_placement_app.placements.models import PlacementsRequest
 
+FACTOR_IMPORTANCE_FIELDS = [
+    'commute_factor',
+    'ethnicity_factor',
+    'gender_factor',
+    'edscore_factor',
+    'spanish_factor',
+]
+
 BLANK_COLS_WARNING_MSG = """Warning: the following columns could not be resolved from your survey file. 
 These columns will be filled with blanks if you choose to continue:"""
 
@@ -62,10 +70,4 @@ class PlacementsRequestRunParametersForm(forms.ModelForm):
 class PlacementsRequestFactorImportanceForm(forms.ModelForm):
     class Meta:
         model = PlacementsRequest
-        fields = [
-            'commute_factor',
-            'ethnicity_factor',
-            'gender_factor',
-            'edscore_factor',
-            'spanish_factor',
-        ]
+        fields = FACTOR_IMPORTANCE_FIELDS
