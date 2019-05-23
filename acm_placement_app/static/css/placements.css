@@ -1,0 +1,55 @@
+.cy-headerbar {
+    width: 100%;
+    display: inline-block;
+    background-color: #f1604a;
+}
+
+.cy-header {
+    width: 550px;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.cy-logo {
+    width: 100px;
+    display: inline-block;
+}
+
+.cy-logo-title {
+    display: inline-block;
+    width: 350px;
+    line-height: 30px;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cy-icon {
+    width: 50px;
+    display: inline-block;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.cy-content-block {
+    width: 525px;
+    margin: auto;
+    margin-top: 25px;
+}
+
+.centerImage{
+    text-align: center;
+    display: block;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+.wizard-container {
+  width: 525px;
+  margin-left: auto;
+  margin-right: auto;
+}

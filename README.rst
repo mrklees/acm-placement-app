@@ -1,7 +1,7 @@
 ACM Placement App
 =================
 
-Web app to calcuate placements for ACM
+A web app to match City Year AmeriCorps Members to schools based on various characteristics of each
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
