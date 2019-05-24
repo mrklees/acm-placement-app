@@ -3,12 +3,18 @@ import os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views import View
 from formtools.wizard.views import SessionWizardView
 
 from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
-    PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm, FACTOR_IMPORTANCE_FIELDS
+    PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm, \
+    get_placementrequest_instance_from_form_list
+from acm_placement_app.placements.models import PlacementsRequest
+from acm_placement_app.placements.utils import calculate_cost
 
 FORMS = [
     ('school_data_form', PlacementsRequestSchoolDataForm),
@@ -48,27 +54,15 @@ class PlacementsRequestWizard(SessionWizardView):
         placementsrequest = get_placementrequest_instance_from_form_list(form_list, commit=False)
         placementsrequest.requested_by = self.request.user
         placementsrequest.save()
-        # run_procedure.delay(placementsrequest.id)
-        return render(self.request, "wizard/done.html")
+        return HttpResponseRedirect(reverse('placements:run', kwargs={'id': placementsrequest.id}))
 
 
-def get_placementrequest_instance_from_form_list(form_list, commit=True):
-    school_data_form, acm_survey_data_form, run_parameters_form, factor_importance_form = form_list
-    placementsrequest = run_parameters_form.save(commit=False)
+@method_decorator(login_required, name='dispatch')
+class RunView(View):
+    def get(self, request, id):
+        placementsrequest = PlacementsRequest.objects.get(id=id)
+        return render(request, "wizard/run.html", context=calculate_cost(placementsrequest))
 
-    # Uploaded files
-    placementsrequest.school_data_file = school_data_form.instance.school_data_file
-    placementsrequest.acm_survey_data_file = acm_survey_data_form.instance.acm_survey_data_file
-
-    # Factor importances
-    if factor_importance_form.is_valid():
-        for field_name in FACTOR_IMPORTANCE_FIELDS:
-            setattr(placementsrequest, field_name, factor_importance_form.cleaned_data[field_name])
-
-    if run_parameters_form.is_valid():
-        if run_parameters_form.cleaned_data['commutes_reference']:
-            placementsrequest.commute_factor = 0
-
-    if commit:
-        placementsrequest.save()
-    return placementsrequest
+    def post(self, request, id):
+        # run_procedure(id)
+        return render(request, "wizard/done.html")
