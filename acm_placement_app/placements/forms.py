@@ -4,6 +4,7 @@ import pandas as pd
 from django import forms
 
 from acm_placement_app.placements.models import PlacementsRequest
+from acm_placement_app.placements.utils import get_acm_survey_missing_columns
 
 FACTOR_IMPORTANCE_FIELDS = [
     'commute_factor',
@@ -26,25 +27,13 @@ class PlacementsRequestSchoolDataForm(forms.ModelForm):
 
 
 class PlacementsRequestACMSurveyDataForm(forms.ModelForm):
-    def missing_columns(self):
-        acm_df = pd.read_csv(self.files['acm_survey_data_form-acm_survey_data_file'])
-        vars_df = pd.read_excel(os.path.join("data_files", "Survey Items to Variable Names.xlsx"))
-
-        # trim whitespace from headers
-        acm_df.columns = acm_df.columns.str.strip()
-        vars_df['SurveyGizmo Column Name'] = vars_df['SurveyGizmo Column Name'].str.strip()
-
-        rename_dict = dict(zip(vars_df['SurveyGizmo Column Name'], vars_df['Expected Column Name']))
-        acm_df.rename(columns=rename_dict, inplace=True)
-
-        return [x for x in vars_df.loc[vars_df['Required?'] == 'Required', 'Expected Column Name']
-                if x not in acm_df.columns]
 
     def get_warnings(self):
         warnings = {}
-        if True:
+        _, missing_columns = get_acm_survey_missing_columns(self.files['acm_survey_data_form-acm_survey_data_file'])
+        if missing_columns:
             warnings['message'] = BLANK_COLS_WARNING_MSG
-            warnings['list'] = self.missing_columns()
+            warnings['list'] = missing_columns
         return warnings
 
     class Meta:
