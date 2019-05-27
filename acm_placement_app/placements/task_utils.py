@@ -11,9 +11,14 @@ from acm_placement_app.placements.forms import RUN_PARAMS_FIELDS, FACTOR_IMPORTA
 
 
 def prepare_folders(run_timestamp):
-    location = get_workspace_location(run_timestamp)
-    pathlib.Path(location).mkdir(parents=True, exist_ok=True)
-    return location
+    workspace_dir = get_workspace_location(run_timestamp)
+    input_dir = os.path.join(workspace_dir, "input")
+    output_dir = os.path.join(workspace_dir, "output")
+
+    pathlib.Path(input_dir).mkdir(parents=True, exist_ok=True)
+    pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    return workspace_dir, input_dir, output_dir
 
 
 def get_workspace_location(run_timestamp):
@@ -39,11 +44,11 @@ def prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string):
     if commute_procedure_csv_string:
         with io.StringIO() as f:
             f.write(commute_procedure_csv_string)
-            commutes_reference_file_name = fs.save("commutes_reference_file.xlsx", f)
+            commutes_reference_file_name = fs.save("commutes_reference_file.csv", f)
 
     elif placementrequest.commutes_reference_file:
         commutes_reference_file = placementrequest.commutes_reference_file.file
-        commutes_reference_file_name = fs.save("commutes_reference_file.xlsx", commutes_reference_file)
+        commutes_reference_file_name = fs.save("commutes_reference_file.csv", commutes_reference_file)
 
     if commutes_reference_file_name:
         return fs.url(commutes_reference_file_name)
@@ -51,22 +56,24 @@ def prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string):
 
 
 def prepare_workspace(placementrequest, run_timestamp, commute_procedure_csv_string):
-    location = prepare_folders(run_timestamp)
-    fs = FileSystemStorage(location=location, base_url=location)
+    workspace_dir, input_dir, output_dir = prepare_folders(run_timestamp)
+    fs = FileSystemStorage(location=input_dir, base_url=input_dir)
 
-    params_file_url = create_params_csv(fs, placementrequest)
+    params_file_path = create_params_csv(fs, placementrequest)
 
     school_data_file = placementrequest.school_data_file.file
     school_data_file_name = fs.save("school_data_file.xlsx", school_data_file)
-    school_data_file_url = fs.url(school_data_file_name)
+    school_data_file_path = fs.url(school_data_file_name)
 
     acm_survey_data_file = placementrequest.acm_survey_data_file.file
-    acm_survey_data_file_name = fs.save("acm_survey_data_file.xlsx", acm_survey_data_file)
-    acm_survey_data_file_url = fs.url(acm_survey_data_file_name)
+    acm_survey_data_file_name = fs.save("acm_survey_data_file.csv", acm_survey_data_file)
+    acm_survey_data_file_path = fs.url(acm_survey_data_file_name)
 
-    commutes_reference_file_url = prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string)
+    commutes_reference_file_path = prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string)
 
-    return school_data_file_url, acm_survey_data_file_url, params_file_url, commutes_reference_file_url
+    file_paths = (school_data_file_path, acm_survey_data_file_path, params_file_path, commutes_reference_file_path)
+
+    return workspace_dir, file_paths, output_dir
 
 
 def clean_workspace(run_timestamp):
