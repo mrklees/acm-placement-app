@@ -9,7 +9,7 @@ def get_tomorrow_date():
     return datetime.date.today() + datetime.timedelta(days=1)
 
 
-class PlacementsRequest(TimeStampedModel, models.Model):
+class PlacementRequest(TimeStampedModel, models.Model):
     requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
     is_completed = models.BooleanField(default=False)
 

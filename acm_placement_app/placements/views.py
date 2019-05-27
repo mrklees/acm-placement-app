@@ -10,18 +10,18 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from formtools.wizard.views import SessionWizardView
 
-from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, PlacementsRequestACMSurveyDataForm, \
-    PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm, \
+from acm_placement_app.placements.forms import PlacementRequestSchoolDataForm, PlacementRequestACMSurveyDataForm, \
+    PlacementRequestRunParametersForm, PlacementRequestFactorImportanceForm, \
     get_placementrequest_instance_from_form_list
-from acm_placement_app.placements.models import PlacementsRequest
+from acm_placement_app.placements.models import PlacementRequest
 from acm_placement_app.placements.tasks import run_procedure
 from acm_placement_app.placements.utils import calculate_cost
 
 FORMS = [
-    ('school_data_form', PlacementsRequestSchoolDataForm),
-    ('acm_survey_data_form', PlacementsRequestACMSurveyDataForm),
-    ('run_parameters_form', PlacementsRequestRunParametersForm),
-    ('factor_importance_form', PlacementsRequestFactorImportanceForm),
+    ('school_data_form', PlacementRequestSchoolDataForm),
+    ('acm_survey_data_form', PlacementRequestACMSurveyDataForm),
+    ('run_parameters_form', PlacementRequestRunParametersForm),
+    ('factor_importance_form', PlacementRequestFactorImportanceForm),
 ]
 
 TEMPLATES = {
@@ -33,7 +33,7 @@ TEMPLATES = {
 
 
 @method_decorator(login_required, name='dispatch')
-class PlacementsRequestWizard(SessionWizardView):
+class PlacementRequestWizard(SessionWizardView):
     form_list = FORMS
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp', 'wizard'))
 
@@ -52,17 +52,17 @@ class PlacementsRequestWizard(SessionWizardView):
         return context
 
     def done(self, form_list, **kwargs):
-        placementsrequest = get_placementrequest_instance_from_form_list(form_list, commit=False)
-        placementsrequest.requested_by = self.request.user
-        placementsrequest.save()
-        return HttpResponseRedirect(reverse('placements:run', kwargs={'id': placementsrequest.id}))
+        placementrequest = get_placementrequest_instance_from_form_list(form_list, commit=False)
+        placementrequest.requested_by = self.request.user
+        placementrequest.save()
+        return HttpResponseRedirect(reverse('placements:run', kwargs={'id': placementrequest.id}))
 
 
 @method_decorator(login_required, name='dispatch')
 class RunView(View):
     def get(self, request, id):
-        placementsrequest = PlacementsRequest.objects.get(id=id)
-        return render(request, "wizard/run.html", context=calculate_cost(placementsrequest))
+        placementrequest = PlacementRequest.objects.get(id=id)
+        return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
         run_procedure(id)

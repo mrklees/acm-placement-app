@@ -34,17 +34,17 @@ def clean_acm_file(acm_file):
     return acm_df
 
 
-def calculate_cost(placementsrequest):
-    school_df = pd.read_excel(placementsrequest.school_data_file.file)
-    acm_df = clean_acm_file(placementsrequest.acm_survey_data_file.file)
+def calculate_cost(placementrequest):
+    school_df = pd.read_excel(placementrequest.school_data_file.file)
+    acm_df = clean_acm_file(placementrequest.acm_survey_data_file.file)
 
     n_acms = len(acm_df)
     n_schools = len(school_df)
 
     run_time = 12  # in seconds, base time required for 1 iteration and no commutes
-    run_time += placementsrequest.num_iterations / 4.38  # 4.38 iterations per second
+    run_time += placementrequest.num_iterations / 4.38  # 4.38 iterations per second
 
-    if placementsrequest.calc_commutes:
+    if placementrequest.calc_commutes:
         # TODO: Clean file
         n_acm_addresses = len(acm_df.loc[~acm_df['Home_Address'].isnull() & (acm_df['Home_Address'] != '')])
 

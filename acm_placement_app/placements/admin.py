@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from acm_placement_app.placements.models import PlacementsRequest
+from acm_placement_app.placements.models import PlacementRequest
 
 
-@admin.register(PlacementsRequest)
-class PlacementsRequestAdmin(admin.ModelAdmin):
+@admin.register(PlacementRequest)
+class PlacementRequestAdmin(admin.ModelAdmin):
     pass
