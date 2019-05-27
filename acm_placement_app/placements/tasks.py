@@ -29,7 +29,7 @@ def process(placementrequest, run_timestamp):
             commute_procedure_csv_string = commute_procedure(commute_schl_df)
 
     workspace_dir, file_paths, output_dir = prepare_workspace(placementrequest, run_timestamp,
-                                                              commute_procedure_csv_string)
+                                                              acm_df, commute_procedure_csv_string)
     r_logs_path = os.path.join(workspace_dir, "r_logs")
 
     r_script = " ".join([
@@ -39,7 +39,6 @@ def process(placementrequest, run_timestamp):
     ])
     print(r_script)
     subprocess.call(r_script, shell=True)
-    print("Ran R")
     with open(r_logs_path) as f:
         errors = f.read()
         if "Execution halted" in errors:

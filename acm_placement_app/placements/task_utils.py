@@ -55,7 +55,7 @@ def prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string):
     return None
 
 
-def prepare_workspace(placementrequest, run_timestamp, commute_procedure_csv_string):
+def prepare_workspace(placementrequest, run_timestamp, acm_df, commute_procedure_csv_string):
     workspace_dir, input_dir, output_dir = prepare_folders(run_timestamp)
     fs = FileSystemStorage(location=input_dir, base_url=input_dir)
 
@@ -65,15 +65,21 @@ def prepare_workspace(placementrequest, run_timestamp, commute_procedure_csv_str
     school_data_file_name = fs.save("school_data_file.xlsx", school_data_file)
     school_data_file_path = fs.url(school_data_file_name)
 
-    acm_survey_data_file = placementrequest.acm_survey_data_file.file
-    acm_survey_data_file_name = fs.save("acm_survey_data_file.csv", acm_survey_data_file)
-    acm_survey_data_file_path = fs.url(acm_survey_data_file_name)
+    acm_survey_data_file_path = prepare_acm_survey_file(fs, acm_df)
 
     commutes_reference_file_path = prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string)
 
     file_paths = (school_data_file_path, acm_survey_data_file_path, params_file_path, commutes_reference_file_path)
 
     return workspace_dir, file_paths, output_dir
+
+
+def prepare_acm_survey_file(fs, acm_df):
+    acm_df_csv_string = acm_df.to_csv(index=False)
+    with io.StringIO() as acm_survey_data_file:
+        acm_survey_data_file.write(acm_df_csv_string)
+        acm_survey_data_file_name = fs.save("acm_survey_data_file.csv", acm_survey_data_file)
+        return fs.url(acm_survey_data_file_name)
 
 
 def clean_workspace(run_timestamp):
