@@ -1,10 +1,16 @@
-import os
-
-import pandas as pd
 from django import forms
 
 from acm_placement_app.placements.models import PlacementsRequest
 from acm_placement_app.placements.utils import get_acm_survey_missing_columns
+
+RUN_PARAMS_FIELDS = [
+    'num_iterations',
+    'prevent_roommates',
+    'consider_HS_elig',
+    'calc_commutes',
+    'commute_date',
+    'commutes_reference_file',
+]
 
 FACTOR_IMPORTANCE_FIELDS = [
     'commute_factor',
@@ -46,14 +52,7 @@ class PlacementsRequestACMSurveyDataForm(forms.ModelForm):
 class PlacementsRequestRunParametersForm(forms.ModelForm):
     class Meta:
         model = PlacementsRequest
-        fields = [
-            'num_iterations',
-            'prevent_roommates',
-            'consider_HS_elig',
-            'calc_commutes',
-            'commute_date',
-            'commutes_reference',
-        ]
+        fields = RUN_PARAMS_FIELDS
 
 
 class PlacementsRequestFactorImportanceForm(forms.ModelForm):
@@ -76,7 +75,7 @@ def get_placementrequest_instance_from_form_list(form_list, commit=True):
             setattr(placementsrequest, field_name, factor_importance_form.cleaned_data[field_name])
 
     if run_parameters_form.is_valid():
-        if run_parameters_form.cleaned_data['commutes_reference']:
+        if run_parameters_form.cleaned_data['commutes_reference_file']:
             placementsrequest.commute_factor = 0
 
     if commit:

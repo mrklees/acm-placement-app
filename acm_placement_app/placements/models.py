@@ -36,7 +36,7 @@ class PlacementsRequest(TimeStampedModel, models.Model):
         "Travel date for commute calculations", blank=True, default=get_tomorrow_date,
         help_text="Required if calculating commutes. Choose a date that represents normal traffic."
     )
-    commutes_reference = models.FileField(
+    commutes_reference_file = models.FileField(
         upload_to='documents/outputs',
         blank=True,
         help_text="After placements are made, you will find a 'Output_Commute_Reference.csv' file in the results. "
@@ -51,3 +51,5 @@ class PlacementsRequest(TimeStampedModel, models.Model):
     edscore_factor = models.IntegerField("Importance of educational attainment diversity", default=1)
     spanish_factor = models.IntegerField("Importance of matching Spanish speaker targets", default=1)
 
+    # errors
+    errors = models.TextField(blank=True)

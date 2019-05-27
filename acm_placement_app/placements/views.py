@@ -14,6 +14,7 @@ from acm_placement_app.placements.forms import PlacementsRequestSchoolDataForm, 
     PlacementsRequestRunParametersForm, PlacementsRequestFactorImportanceForm, \
     get_placementrequest_instance_from_form_list
 from acm_placement_app.placements.models import PlacementsRequest
+from acm_placement_app.placements.tasks import run_procedure
 from acm_placement_app.placements.utils import calculate_cost
 
 FORMS = [
@@ -64,5 +65,5 @@ class RunView(View):
         return render(request, "wizard/run.html", context=calculate_cost(placementsrequest))
 
     def post(self, request, id):
-        # run_procedure(id)
+        run_procedure(id)
         return render(request, "wizard/done.html")
