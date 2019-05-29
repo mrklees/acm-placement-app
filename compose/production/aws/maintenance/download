@@ -6,7 +6,7 @@
 ###     $ docker-compose -f production.yml run --rm awscli <1>
 
 set -o errexit
-set -o pipefail
+# set -o pipefail
 set -o nounset
 
 working_dir="$(dirname ${0})"

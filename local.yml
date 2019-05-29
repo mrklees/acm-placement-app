@@ -8,8 +8,8 @@ services:
   django: &django
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
-    image: acm_placement_app_local_django
+      dockerfile: ./compose/local/django/Dockerfile-debian
+    image: acm_placement_app_local2_django
     depends_on:
       - postgres
       - mailhog
@@ -43,7 +43,7 @@ services:
 
   celeryworker:
     <<: *django
-    image: acm_placement_app_local_celeryworker
+    image: acm_placement_app_local2_celeryworker
     depends_on:
       - redis
       - postgres
@@ -53,7 +53,7 @@ services:
 
   celerybeat:
     <<: *django
-    image: acm_placement_app_local_celerybeat
+    image: acm_placement_app_local2_celerybeat
     depends_on:
       - redis
       - postgres
@@ -63,7 +63,16 @@ services:
 
   flower:
     <<: *django
-    image: acm_placement_app_local_flower
+    image: acm_placement_app_local2_flower
     ports:
       - "5555:5555"
     command: /start-flower
+
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - ./.envs/.production/.postgres
+    links:
+      - postgres
+    ports:
+      - 5433:5433
