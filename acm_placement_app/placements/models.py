@@ -11,11 +11,11 @@ def get_tomorrow_date():
 
 
 def input_upload_path(instance, filename):
-    return os.path.join("data", instance.id, 'inputs', filename)
+    return os.path.join("data", 'inputs', filename)
 
 
 def output_upload_path(instance, filename):
-    return os.path.join("data", str(instance.placementrequest.id), 'outputs', filename)
+    return os.path.join("data", 'outputs', filename)
 
 
 class PlacementRequest(TimeStampedModel, models.Model):

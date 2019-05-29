@@ -1,0 +1,33 @@
+{%  extends "base.html" %}
+
+{% block content %}
+  <h1>List of requests</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date created</th>
+        <th>Completed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for placementrequest in placementrequests %}
+        <tr>
+          <td>
+            {{ placementrequest.created }}
+          </td>
+          <td>
+            {% if placementrequest.is_completed %}
+              <i class="fas fa-check-circle" style="color: green"></i>
+            {% else %}
+              <i class="fas fa-times-circle" style="color: red"></i>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
+
