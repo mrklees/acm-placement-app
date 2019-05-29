@@ -20,16 +20,21 @@ def output_upload_path(instance, filename):
 
 class PlacementRequest(TimeStampedModel, models.Model):
     requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
-    completed = models.DateTimeField(blank=True, null=True)
+    started = models.DateTimeField(blank=True, null=True, editable=False)
 
     @property
     def is_completed(self):
-        return self.completed is not None
+        return PlacementResult.objects.filter(placementrequest=self).exists()
+
+    @property
+    def completed(self):
+        if self.is_completed:
+            return self.placementresult.created
 
     @property
     def run_duration(self):
         if self.is_completed:
-            return self.completed - self.placementresult.created
+            return self.completed - self.started
 
     school_data_file = models.FileField(upload_to=input_upload_path)
     acm_survey_data_file = models.FileField("ACM survey data file", upload_to=input_upload_path)
