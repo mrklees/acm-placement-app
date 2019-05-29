@@ -1,5 +1,10 @@
 {% extends "wizard/base.html" %}
 
 {% block content %}
-  <p>Placements are being made. You will be notified when the results are ready.</p>
+  <p>Placements are being made. You can see the results
+    <a href="{% url 'placements:placementrequest-details' placementrequest.id %}">
+      here
+    </a>
+    once they are ready.
+  </p>
 {% endblock %}

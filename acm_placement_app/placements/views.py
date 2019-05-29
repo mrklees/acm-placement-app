@@ -65,15 +65,15 @@ class RunView(View):
     def get(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
         if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+            return render(request, "wizard/is_completed.html", context={'placementrequest': placementrequest})
         return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
         if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+            return render(request, "wizard/is_completed.html", context={'placementrequest': placementrequest})
         run_procedure.delay(id)
-        return render(request, "wizard/done.html")
+        return render(request, "wizard/done.html", context={'placementrequest': placementrequest})
 
 
 @method_decorator(login_required, name='dispatch')
