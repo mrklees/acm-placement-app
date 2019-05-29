@@ -71,7 +71,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     env_file:
-      - ./.envs/.production/.postgres
+      - ./.envs/.local/.postgres
     links:
       - postgres
     ports:
