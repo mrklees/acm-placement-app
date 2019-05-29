@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from django.conf import settings
 from django.db import models
@@ -9,12 +10,20 @@ def get_tomorrow_date():
     return datetime.date.today() + datetime.timedelta(days=1)
 
 
+def input_upload_path(instance, filename):
+    return os.path.join("data", instance.id, 'inputs', filename)
+
+
+def output_upload_path(instance, filename):
+    return os.path.join("data", str(instance.placementrequest.id), 'outputs', filename)
+
+
 class PlacementRequest(TimeStampedModel, models.Model):
     requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
     is_completed = models.BooleanField(default=False)
 
-    school_data_file = models.FileField(upload_to='data/inputs/school_data/')
-    acm_survey_data_file = models.FileField("ACM survey data file", upload_to='data/inputs/acm_survey_data/')
+    school_data_file = models.FileField(upload_to=input_upload_path)
+    acm_survey_data_file = models.FileField("ACM survey data file", upload_to=input_upload_path)
 
     num_iterations = models.IntegerField(
         "Number of iterations", default=10000,
@@ -37,7 +46,7 @@ class PlacementRequest(TimeStampedModel, models.Model):
         help_text="Required if calculating commutes. Choose a date that represents normal traffic."
     )
     commutes_reference_file = models.FileField(
-        upload_to='documents/outputs',
+        upload_to=input_upload_path,
         blank=True,
         help_text="After placements are made, you will find a 'Output_Commute_Reference.csv' file in the results. "
                   "If you want to run additional placement processes, "
@@ -53,3 +62,11 @@ class PlacementRequest(TimeStampedModel, models.Model):
 
     # errors
     errors = models.TextField(blank=True)
+
+
+class PlacementResult(TimeStampedModel, models.Model):
+    placementrequest = models.OneToOneField(PlacementRequest, on_delete=models.CASCADE)
+
+    commutes_file = models.FileField(upload_to=output_upload_path)
+    placements_file = models.FileField(upload_to=output_upload_path)
+    trace_file = models.FileField(upload_to=output_upload_path)

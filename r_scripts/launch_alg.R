@@ -146,8 +146,8 @@ if(output$best_score < 1000000){
   trace <- output$trace[output$trace$score > 0,]
 }
 
-write.table(best_placements, file = paste(output_path, "Output_Placements.csv", sep="/"), sep=",", row.names=FALSE, na = "")
-write.table(trace, file = paste(output_path, "Output_Trace.csv", sep="/"), sep=",", row.names=FALSE, na = "")
+write.table(best_placements, file = paste(output_path, "placements.csv", sep="/"), sep=",", row.names=FALSE, na = "")
+write.table(trace, file = paste(output_path, "trace.csv", sep="/"), sep=",", row.names=FALSE, na = "")
 
 # pass new placements back in
 #team_placements_df <- merge(best_placements[c("acm_id", "placement")], team_placements_df[!names(team_placements_df) %in% "placement"], by="acm_id", all.x=TRUE)
