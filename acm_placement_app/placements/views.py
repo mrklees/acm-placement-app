@@ -1,9 +1,10 @@
 import os
+import zipfile
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -14,7 +15,7 @@ from formtools.wizard.views import SessionWizardView
 from acm_placement_app.placements.forms import PlacementRequestSchoolDataForm, PlacementRequestACMSurveyDataForm, \
     PlacementRequestRunParametersForm, PlacementRequestFactorImportanceForm, \
     get_placementrequest_instance_from_form_list
-from acm_placement_app.placements.models import PlacementRequest
+from acm_placement_app.placements.models import PlacementRequest, PlacementResult
 from acm_placement_app.placements.tasks import run_procedure
 from acm_placement_app.placements.utils import calculate_cost
 
@@ -95,3 +96,28 @@ class PlacementRequestDetail(DetailView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(requested_by=self.request.user)
+
+@login_required
+def download_results(request, pk=None):
+    placementrequest = PlacementRequest.objects.get(id=pk)
+
+    try:
+        placementresult = placementrequest.placementresult
+        response = HttpResponse(content_type='application/zip')
+        zip_file_name = f"Request_{placementrequest.id}_results.zip"
+        response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
+        with zipfile.ZipFile(response, 'w') as zip_file:
+            write_file_to_zip(zip_file, placementrequest.school_data_file)
+            write_file_to_zip(zip_file, placementrequest.acm_survey_data_file)
+            write_file_to_zip(zip_file, placementresult.commutes_file)
+            write_file_to_zip(zip_file, placementresult.placements_file)
+            write_file_to_zip(zip_file, placementresult.trace_file)
+        return response
+
+    except PlacementResult.DoesNotExist:
+        raise Http404
+
+
+def write_file_to_zip(zip_file, file_obj):
+    file_name = os.path.basename(file_obj.name)
+    zip_file.writestr(file_name, file_obj.read())

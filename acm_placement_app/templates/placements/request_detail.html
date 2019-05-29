@@ -15,9 +15,12 @@
 
   {% if placementrequest.is_completed %}
     <h2>Results</h2>
-    <div>
-      <a class="btn btn-primary" href="{{ placementrequest.placementresult.commutes_file.url }}">Download Commutes</a>
-    </div>
+
+    <a class="btn btn-primary" href="{% url 'placements:placementrequest-download-results' placementrequest.id %}">
+      Download Results
+    </a>
+
+    <a class="btn btn-primary" href="{{ placementrequest.placementresult.commutes_file.url }}">Download Commutes</a>
   {% endif %}
 
 
