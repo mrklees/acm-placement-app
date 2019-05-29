@@ -7,6 +7,7 @@ from celery import shared_task
 from django.conf import settings
 from django.core.files import File
 from django.db import transaction
+from django.utils import timezone
 
 from acm_placement_app.placements.commutes import clean_commute_inputs, commute_procedure
 from acm_placement_app.placements.models import PlacementRequest, PlacementResult
@@ -72,7 +73,7 @@ def run_procedure(placements_request_id):
 
     try:
         process(placementrequest, run_timestamp)
-        placementrequest.is_completed = True
+        placementrequest.completed = timezone.now()
         placementrequest.errors = ""
     except ExecutionHalted as e:
         placementrequest.errors = str(e)

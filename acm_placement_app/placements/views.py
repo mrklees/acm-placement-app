@@ -15,7 +15,7 @@ from formtools.wizard.views import SessionWizardView
 from acm_placement_app.placements.forms import PlacementRequestSchoolDataForm, PlacementRequestACMSurveyDataForm, \
     PlacementRequestRunParametersForm, PlacementRequestFactorImportanceForm, \
     get_placementrequest_instance_from_form_list
-from acm_placement_app.placements.models import PlacementRequest, PlacementResult
+from acm_placement_app.placements.models import PlacementRequest
 from acm_placement_app.placements.tasks import run_procedure
 from acm_placement_app.placements.utils import calculate_cost
 
@@ -64,14 +64,14 @@ class PlacementRequestWizard(SessionWizardView):
 class RunView(View):
     def get(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
-        # if placementrequest.is_completed:
-        #     return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+        if placementrequest.is_completed:
+            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
         return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
-        # placementrequest = PlacementRequest.objects.get(id=id)
-        # if placementrequest.is_completed:
-        #     return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+        placementrequest = PlacementRequest.objects.get(id=id)
+        if placementrequest.is_completed:
+            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
         run_procedure(id)
         return render(request, "wizard/done.html")
 
@@ -97,25 +97,27 @@ class PlacementRequestDetail(DetailView):
         queryset = super().get_queryset()
         return queryset.filter(requested_by=self.request.user)
 
+
 @login_required
 def download_results(request, pk=None):
     placementrequest = PlacementRequest.objects.get(id=pk)
 
-    try:
-        placementresult = placementrequest.placementresult
-        response = HttpResponse(content_type='application/zip')
-        zip_file_name = f"Request_{placementrequest.id}_results.zip"
-        response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
-        with zipfile.ZipFile(response, 'w') as zip_file:
-            write_file_to_zip(zip_file, placementrequest.school_data_file)
-            write_file_to_zip(zip_file, placementrequest.acm_survey_data_file)
-            write_file_to_zip(zip_file, placementresult.commutes_file)
-            write_file_to_zip(zip_file, placementresult.placements_file)
-            write_file_to_zip(zip_file, placementresult.trace_file)
-        return response
-
-    except PlacementResult.DoesNotExist:
+    if not placementrequest.is_completed:
         raise Http404
+
+    placementresult = placementrequest.placementresult
+    response = HttpResponse(content_type='application/zip')
+    zip_file_name = f"Request_{placementrequest.id}_results.zip"
+    response['Content-Disposition'] = f'attachment; filename={zip_file_name}'
+
+    with zipfile.ZipFile(response, 'w') as zip_file:
+        write_file_to_zip(zip_file, placementrequest.school_data_file)
+        write_file_to_zip(zip_file, placementrequest.acm_survey_data_file)
+        write_file_to_zip(zip_file, placementresult.commutes_file)
+        write_file_to_zip(zip_file, placementresult.placements_file)
+        write_file_to_zip(zip_file, placementresult.trace_file)
+
+    return response
 
 
 def write_file_to_zip(zip_file, file_obj):

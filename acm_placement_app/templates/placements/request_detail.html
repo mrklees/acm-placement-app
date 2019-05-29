@@ -7,11 +7,19 @@
   <p>
     <b>Completed:</b>
     {% if placementrequest.is_completed %}
-      <i class="fas fa-check-circle" style="color: green"></i>
+      <i class="fas fa-check-circle" style="color: green"></i> at {{ placementrequest.completed }}
     {% else %}
       <i class="fas fa-times-circle" style="color: red"></i>
     {% endif %}
   </p>
+
+  {% if placementrequest.is_completed %}
+    <p>
+      <b>Run duration:</b>
+      <span>{{ placementrequest.run_duration }}</span>
+    </p>
+
+  {% endif %}
 
   {% if placementrequest.is_completed %}
     <h2>Results</h2>
