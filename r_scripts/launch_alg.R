@@ -39,12 +39,12 @@ dataset$calc_commutes <- as.logical(dataset$calc_commutes)
 
 score_factors <- list(
   commute_factor=dataset$commute_factor,
-  Edscore_factor=dataset$Edscore_factor,
+  Edscore_factor=dataset$edscore_factor,
   Math_factor=0, # remove altogether?
   age_factor=0,
   ethnicity_factor=dataset$ethnicity_factor,
   Tutoring_factor=0,
-  Spanish_factor=dataset$Spanish_factor,
+  Spanish_factor=dataset$spanish_factor,
   gender_factor=dataset$gender_factor,
   preserve_ij_factor=0
 )
@@ -103,7 +103,7 @@ team_placements_df <- initial_placement(acm_enc, school_targets)
 #score_factors$Edscore_factor <- 1
 #score_factors$Spanish_factor <- 0
 #score_factors$preserve_ij_factor <- 1
-#dataset$number_iterations <- 5000
+#dataset$num_iterations <- 5000
 
 # load from output
 #prior_placements <- read.csv("Z:\\ChiPrivate\\Chicago Data and Evaluation\\SY19\\School Team Placement\\2018-08-05 Placements and Notes\\ACM_Placement_Result_8k_iter_Spanish_3\\Output_Placements.csv", check.names=FALSE, stringsAsFactors=FALSE)
@@ -115,7 +115,7 @@ elig_plc_acmwise_df <- elig_plcmnts_acmwise(team_placements_df, dataset$prevent_
 team_placements_df <- initial_valid_placement(team_placements_df, school_df, elig_plc_schwise_df, elig_plc_acmwise_df)
 
 output <- run_intermediate_annealing_process(starting_placements = team_placements_df, school_df = school_targets, 
-                                             best_placements = team_placements_df, number_of_iterations = dataset$number_iterations, 
+                                             best_placements = team_placements_df, number_of_iterations = dataset$num_iterations,
                                              center_scale=runif(1, 1e-3, 0.25), width_scale=runif(1, 1e-3, 0.25))
 
 best_placements <- output$best_placements
@@ -146,8 +146,8 @@ if(output$best_score < 1000000){
   trace <- output$trace[output$trace$score > 0,]
 }
 
-write.table(best_placements, file = paste0(output_path, "Output_Placements.csv"), sep=",", row.names=FALSE, na = "")
-write.table(trace, file = paste0(output_path, "Output_Trace.csv"), sep=",", row.names=FALSE, na = "")
+write.table(best_placements, file = paste(output_path, "Output_Placements.csv", sep="/"), sep=",", row.names=FALSE, na = "")
+write.table(trace, file = paste(output_path, "Output_Trace.csv", sep="/"), sep=",", row.names=FALSE, na = "")
 
 # pass new placements back in
 #team_placements_df <- merge(best_placements[c("acm_id", "placement")], team_placements_df[!names(team_placements_df) %in% "placement"], by="acm_id", all.x=TRUE)

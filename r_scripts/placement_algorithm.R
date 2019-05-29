@@ -273,7 +273,7 @@ initial_valid_placement <- function(team_placements_df, school_df, elig_plc_schw
   span_targets_met <- (sum(span_target_diffs_df$diffs < 0, na.rm=T) == 0)
   span_surplus_sch_ids <- span_target_diffs_df$placement[span_target_diffs_df$diffs > 0]
   span_deficit_sch_ids <- span_target_diffs_df$placement[span_target_diffs_df$diffs < 0]
-  
+
   team_placements_df <- append_elig_col(team_placements_df, elig_plc_schwise_df, elig_plc_acmwise_df)
   if((score_factors$Spanish_factor > 0) & (span_targets_met == FALSE)){
     # assign 'elig' to 0 for any Spanish speaking ACMs at schools with surplus of Spanish speakers

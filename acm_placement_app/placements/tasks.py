@@ -16,6 +16,10 @@ R_SCRIPTS_PATH = os.path.join(settings.ROOT_DIR, 'r_scripts')
 LAUNCH_ALG_SCRIPT = os.path.join(R_SCRIPTS_PATH, 'launch_alg.R')
 
 
+class ExecutionHalted(BaseException):
+    pass
+
+
 @transaction.atomic
 def process(placementrequest, run_timestamp):
     school_df = pd.read_excel(placementrequest.school_data_file.file)
@@ -39,10 +43,11 @@ def process(placementrequest, run_timestamp):
     ])
     print(r_script)
     subprocess.call(r_script, shell=True)
+    print("Finished running R")
     with open(r_logs_path) as f:
         errors = f.read()
         if "Execution halted" in errors:
-            raise Exception(errors)
+            raise ExecutionHalted(errors)
 
 
 @shared_task
@@ -53,9 +58,8 @@ def run_procedure(placements_request_id):
     try:
         process(placementrequest, run_timestamp)
         placementrequest.is_completed = True
-
-    except Exception as e:
-        # TODO: Add errors to a field in request object
+        placementrequest.errors = ""
+    except ExecutionHalted as e:
         placementrequest.errors = str(e)
     finally:
         pass
