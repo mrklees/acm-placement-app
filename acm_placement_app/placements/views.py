@@ -72,7 +72,7 @@ class RunView(View):
         placementrequest = PlacementRequest.objects.get(id=id)
         if placementrequest.is_completed:
             return render(request, "wizard/is_completed.html", context={'request': placementrequest})
-        run_procedure(id)
+        run_procedure.delay(id)
         return render(request, "wizard/done.html")
 
 
