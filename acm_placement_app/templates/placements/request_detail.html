@@ -1,0 +1,25 @@
+{%  extends "base.html" %}
+
+{% block content %}
+  <h1>Placement Request #{{ placementrequest.id }}</h1>
+
+  <p><b>Created:</b> {{ placementrequest.created }}</p>
+  <p>
+    <b>Completed:</b>
+    {% if placementrequest.is_completed %}
+      <i class="fas fa-check-circle" style="color: green"></i>
+    {% else %}
+      <i class="fas fa-times-circle" style="color: red"></i>
+    {% endif %}
+  </p>
+
+  {% if placementrequest.is_completed %}
+    <h2>Results</h2>
+    <div>
+      <a class="btn btn-primary" href="{{ placementrequest.placementresult.commutes_file.url }}">Download Commutes</a>
+    </div>
+  {% endif %}
+
+
+{% endblock %}
+

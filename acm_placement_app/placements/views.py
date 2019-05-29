@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from formtools.wizard.views import SessionWizardView
 
 from acm_placement_app.placements.forms import PlacementRequestSchoolDataForm, PlacementRequestACMSurveyDataForm, \
@@ -63,21 +63,33 @@ class PlacementRequestWizard(SessionWizardView):
 class RunView(View):
     def get(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
-        if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+        # if placementrequest.is_completed:
+        #     return render(request, "wizard/is_completed.html", context={'request': placementrequest})
         return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
-        placementrequest = PlacementRequest.objects.get(id=id)
-        if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'request': placementrequest})
-        run_procedure.delay(id)
+        # placementrequest = PlacementRequest.objects.get(id=id)
+        # if placementrequest.is_completed:
+        #     return render(request, "wizard/is_completed.html", context={'request': placementrequest})
+        run_procedure(id)
         return render(request, "wizard/done.html")
 
 
+@method_decorator(login_required, name='dispatch')
 class PlacementRequestList(ListView):
     context_object_name = 'placementrequests'
     template_name = "placements/request_list.html"
+    queryset = PlacementRequest.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(requested_by=self.request.user)
+
+
+@method_decorator(login_required, name='dispatch')
+class PlacementRequestDetail(DetailView):
+    context_object_name = 'placementrequest'
+    template_name = "placements/request_detail.html"
     queryset = PlacementRequest.objects.all()
 
     def get_queryset(self):

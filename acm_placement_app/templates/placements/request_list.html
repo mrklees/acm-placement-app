@@ -14,7 +14,9 @@
       {% for placementrequest in placementrequests %}
         <tr>
           <td>
-            {{ placementrequest.created }}
+            <a href="{% url 'placements:placementrequest-details' placementrequest.id %}">
+              {{ placementrequest.created }}
+            </a>
           </td>
           <td>
             {% if placementrequest.is_completed %}
