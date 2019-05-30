@@ -61,7 +61,7 @@ def process(placementrequest, run_timestamp):
     placementresult = PlacementResult(placementrequest=placementrequest)
     for output_file_field, output_file_path in OUTPUT_FILES.items():
         full_path = os.path.join(workspace_dir, output_file_path)
-        with open(full_path) as output_file:
+        with open(full_path, 'rb') as output_file:
             getattr(placementresult, output_file_field).save(os.path.basename(full_path), File(output_file))
     placementresult.save()
 
