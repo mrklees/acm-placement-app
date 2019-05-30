@@ -1,0 +1,9 @@
+{% if placementrequest.run_state == 'not_started' %}
+  <span class="badge badge-secondary">Not Started</span>
+{% elif placementrequest.run_state == 'started' %}
+  <span class="badge badge-info">Started</span>
+{% elif placementrequest.run_state == 'failure' %}
+  <span class="badge badge-danger">Failure</span>
+{% elif placementrequest.run_state == 'success' %}
+  <span class="badge badge-success">Success</span>
+{% endif %}

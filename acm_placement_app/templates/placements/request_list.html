@@ -7,7 +7,10 @@
     <thead>
       <tr>
         <th>Date created</th>
+        <th>State</th>
+        <th>Started</th>
         <th>Completed</th>
+        <th>Run duration</th>
       </tr>
     </thead>
     <tbody>
@@ -19,17 +22,15 @@
             </a>
           </td>
           <td>
-            {% if placementrequest.is_completed %}
-              <i class="fas fa-check-circle" style="color: green"></i>
-            {% else %}
-              <i class="fas fa-times-circle" style="color: red"></i>
-            {% endif %}
+            {% include "placements/request_state.html"%}
           </td>
+          <td>{{ placementrequest.started }}</td>
+          <td>{{ placementrequest.completed }}</td>
+          <td>{{ placementrequest.run_duration }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-
 
 {% endblock %}
 

@@ -5,11 +5,7 @@ from acm_placement_app.placements.models import PlacementRequest, PlacementResul
 
 @admin.register(PlacementRequest)
 class PlacementRequestAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'requested_by', 'created', 'is_completed',)
-
-    def is_completed(self, instance):
-        return instance.is_completed
-    is_completed.boolean = True
+    list_display = ('__str__', 'requested_by', 'created', 'started', 'completed', 'run_state',)
 
 
 @admin.register(PlacementResult)

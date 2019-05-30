@@ -5,6 +5,11 @@ from django.conf import settings
 from django.db import models
 from model_utils.models import TimeStampedModel
 
+NOT_STARTED = 'not_started'
+STARTED = 'started'
+FAILURE = 'failure'
+SUCCESS = 'success'
+
 
 def get_tomorrow_date():
     return datetime.date.today() + datetime.timedelta(days=1)
@@ -21,20 +26,31 @@ def output_upload_path(instance, filename):
 class PlacementRequest(TimeStampedModel, models.Model):
     requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
     started = models.DateTimeField(blank=True, null=True, editable=False)
+    completed = models.DateTimeField(blank=True, null=True, editable=False)
 
     @property
     def is_completed(self):
-        return PlacementResult.objects.filter(placementrequest=self).exists()
+        return self.completed is not None
 
     @property
-    def completed(self):
-        if self.is_completed:
-            return self.placementresult.created
+    def is_successful(self):
+        return PlacementResult.objects.filter(placementrequest=self).exists()
 
     @property
     def run_duration(self):
         if self.is_completed:
             return self.completed - self.started
+
+    @property
+    def run_state(self):
+        if self.started is None:
+            return NOT_STARTED
+        if self.started and self.completed is None:
+            return STARTED
+        if self.started and self.completed and not self.is_successful:
+            return FAILURE
+        if self.started and self.completed and self.is_successful:
+            return SUCCESS
 
     school_data_file = models.FileField(upload_to=input_upload_path)
     acm_survey_data_file = models.FileField("ACM survey data file", upload_to=input_upload_path)

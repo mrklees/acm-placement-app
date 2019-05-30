@@ -7,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import ListView, DetailView
@@ -64,14 +65,16 @@ class PlacementRequestWizard(SessionWizardView):
 class RunView(View):
     def get(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
-        if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'placementrequest': placementrequest})
+        if placementrequest.is_successful:
+            return render(request, "wizard/is_successful.html", context={'placementrequest': placementrequest})
         return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
-        if placementrequest.is_completed:
-            return render(request, "wizard/is_completed.html", context={'placementrequest': placementrequest})
+        if placementrequest.is_successful:
+            return render(request, "wizard/is_successful.html", context={'placementrequest': placementrequest})
+        placementrequest.started = timezone.now()
+        placementrequest.save()
         run_procedure.delay(id)
         return render(request, "wizard/done.html", context={'placementrequest': placementrequest})
 
@@ -102,7 +105,7 @@ class PlacementRequestDetail(DetailView):
 def download_results(request, pk=None):
     placementrequest = PlacementRequest.objects.get(id=pk)
 
-    if not placementrequest.is_completed:
+    if not placementrequest.is_successful:
         raise Http404
 
     placementresult = placementrequest.placementresult

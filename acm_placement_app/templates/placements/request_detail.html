@@ -5,30 +5,37 @@
 
   <p><b>Created:</b> {{ placementrequest.created }}</p>
   <p>
+    <b>State:</b>
+    {% include "placements/request_state.html"%}
+  </p>
+  <p>
+    <b>Started:</b>
+    {{ placementrequest.started }}
+  </p>
+  <p>
     <b>Completed:</b>
-    {% if placementrequest.is_completed %}
-      <i class="fas fa-check-circle" style="color: green"></i> at {{ placementrequest.completed }}
-    {% else %}
-      <i class="fas fa-times-circle" style="color: red"></i>
-    {% endif %}
+    {{ placementrequest.completed }}
+  </p>
+  <p>
+    <b>Run duration:</b>
+    {{ placementrequest.run_duration }}
   </p>
 
-  {% if placementrequest.is_completed %}
-    <p>
-      <b>Run duration:</b>
-      <span>{{ placementrequest.run_duration }}</span>
-    </p>
-
+  {% if placementrequest.is_successful %}
+    <div>
+      <h2>Results</h2>
+      <a class="btn btn-primary" href="{% url 'placements:placementrequest-download-results' placementrequest.id %}">
+        Download Results
+      </a>
+      <a class="btn btn-primary" href="{{ placementrequest.placementresult.commutes_file.url }}">Download Commutes</a>
+    </div>
   {% endif %}
 
-  {% if placementrequest.is_completed %}
-    <h2>Results</h2>
-
-    <a class="btn btn-primary" href="{% url 'placements:placementrequest-download-results' placementrequest.id %}">
-      Download Results
-    </a>
-
-    <a class="btn btn-primary" href="{{ placementrequest.placementresult.commutes_file.url }}">Download Commutes</a>
+  {% if placementrequest.errors %}
+    <div>
+      <h3>Errors</h3>
+      <p>{{ placementrequest.errors }}</p>
+    </div>
   {% endif %}
 
 

@@ -70,10 +70,10 @@ def process(placementrequest, run_timestamp):
 def run_procedure(placements_request_id):
     run_timestamp = int(time.time())
     placementrequest = PlacementRequest.objects.get(id=placements_request_id)
-    placementrequest.started = timezone.now()
 
     try:
         process(placementrequest, run_timestamp)
+        placementrequest.completed = timezone.now()
         placementrequest.errors = ""
     except ExecutionHalted as e:
         placementrequest.errors = str(e)
