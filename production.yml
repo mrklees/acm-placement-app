@@ -9,7 +9,7 @@ services:
   django: &django
     build:
       context: .
-      dockerfile: ./compose/production/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile-debian
     image: acm_placement_app_production_django
     depends_on:
       - postgres
@@ -62,6 +62,7 @@ services:
     ports:
       - "5555:5555"
     command: /start-flower
+
   awscli:
     build:
       context: .
@@ -70,3 +71,12 @@ services:
       - ./.envs/.production/.django
     volumes:
       - production_postgres_data_backups:/backups
+
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - ./.envs/.production/.postgres
+    links:
+      - postgres
+    ports:
+      - 5433:5433
