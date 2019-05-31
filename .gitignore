@@ -329,5 +329,6 @@ acm_placement_app/media/
 
 
 .ipython/
-.env
-.envs/*
+
+.env*
+
