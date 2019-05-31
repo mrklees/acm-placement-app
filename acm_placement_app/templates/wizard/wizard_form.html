@@ -48,6 +48,12 @@
       {% endif %}
     </div>
     <div class="form-buttons">
+      {% if wizard.steps.current == wizard.steps.last %}
+        <input type="submit" class="btn btn-success float-right" value="{% trans "Submit" %}"/>
+      {% else %}
+        <input type="submit" class="btn btn-primary float-right" value="{% trans "Next" %}"/>
+      {% endif %}
+
       {% if wizard.steps.prev %}
         <button class="btn btn-danger"
                 name="wizard_goto_step"  type="submit" value="{{ wizard.steps.first }}"
@@ -62,12 +68,6 @@
           {% trans "Back" %}
         </button>
 
-      {% endif %}
-
-      {% if wizard.steps.current == wizard.steps.last %}
-        <input type="submit" class="btn btn-success float-right" value="{% trans "Submit" %}"/>
-      {% else %}
-        <input type="submit" class="btn btn-primary float-right" value="{% trans "Next" %}"/>
       {% endif %}
     </div>
   </form>
