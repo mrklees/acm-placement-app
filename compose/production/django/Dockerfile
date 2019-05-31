@@ -9,14 +9,14 @@ RUN apt-get update \
 
 RUN groupadd django && useradd -g django django
 
+# Install R dependencies
+COPY ./r_scripts/install_dependencies.R /install_dependencies.R
+RUN Rscript /install_dependencies.R
+
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
-
-# Install R dependencies
-COPY ./r_scripts/install_dependencies.R /install_dependencies.R
-RUN Rscript /install_dependencies.R
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r//' /entrypoint
