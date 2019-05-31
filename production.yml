@@ -9,7 +9,7 @@ services:
   django: &django
     build:
       context: .
-      dockerfile: ./compose/production/django/Dockerfile-debian
+      dockerfile: ./compose/production/django/Dockerfile
     image: acm_placement_app_production_django
     depends_on:
       - postgres
