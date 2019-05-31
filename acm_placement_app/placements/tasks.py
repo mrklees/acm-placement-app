@@ -67,9 +67,11 @@ def process(placementrequest, run_timestamp):
 
 
 @shared_task
-def run_procedure(placements_request_id):
+def run_procedure(placements_request_id, started):
     run_timestamp = int(time.time())
     placementrequest = PlacementRequest.objects.get(id=placements_request_id)
+    if placementrequest.started is None:
+        placementrequest.started = started
 
     try:
         process(placementrequest, run_timestamp)

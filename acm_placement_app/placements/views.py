@@ -1,4 +1,5 @@
 import os
+import time
 import zipfile
 
 from django.conf import settings
@@ -65,17 +66,22 @@ class PlacementRequestWizard(SessionWizardView):
 class RunView(View):
     def get(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
+
         if placementrequest.is_successful:
             return render(request, "wizard/is_successful.html", context={'placementrequest': placementrequest})
+
         return render(request, "wizard/run.html", context=calculate_cost(placementrequest))
 
     def post(self, request, id):
         placementrequest = PlacementRequest.objects.get(id=id)
+
         if placementrequest.is_successful:
             return render(request, "wizard/is_successful.html", context={'placementrequest': placementrequest})
+
         placementrequest.started = timezone.now()
         placementrequest.save()
-        run_procedure.delay(id)
+
+        run_procedure.delay(id, started=placementrequest.started)
         return render(request, "wizard/done.html", context={'placementrequest': placementrequest})
 
 
