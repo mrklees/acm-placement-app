@@ -59,9 +59,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 # https://django-storages.readthedocs.io/en/latest/#installation
 INSTALLED_APPS += ["storages"]  # noqa F405
 
-AZURE_ACCOUNT_NAME = env("DJANGO_AZURE_ACCOUNT_NAME")
-AZURE_ACCOUNT_KEY = env("DJANGO_AZURE_ACCOUNT_KEY")
-AZURE_CONTAINER = env("DJANGO_AZURE_CONTAINER")
+AZURE_STORAGE_ACCOUNT_NAME = env("DJANGO_AZURE_STORAGE_ACCOUNT_NAME")
+AZURE_STORAGE_ACCOUNT_KEY = env("DJANGO_AZURE_STORAGE_ACCOUNT_KEY")
+AZURE_STORAGE_CONTAINER = env("DJANGO_AZURE_STORAGE_CONTAINER")
 
 # STATIC
 # ------------------------
@@ -78,7 +78,7 @@ class MediaRootAzureStorage(AzureStorage):
 
 # endregion
 DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootAzureStorage"
-# MEDIA_URL = f"https://{AZURE_CONTAINER}.blob.core.windows.net/media/"
+# MEDIA_URL = f"https://{AZURE_STORAGE_CONTAINER}.blob.core.windows.net/media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
