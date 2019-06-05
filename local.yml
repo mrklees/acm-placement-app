@@ -1,8 +1,8 @@
 version: '3'
 
 volumes:
-  local_postgres_data: {}
-  local_postgres_data_backups: {}
+  acm_placement_app_local_postgres_data: {}
+  acm_placement_app_local_postgres_data_backups: {}
 
 services:
   django: &django
@@ -28,8 +28,8 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: acm_placement_app_local_postgres
     volumes:
-      - local_postgres_data:/var/lib/postgresql/data
-      - local_postgres_data_backups:/backups
+      - acm_placement_app_local_postgres_data:/var/lib/postgresql/data
+      - acm_placement_app_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
 

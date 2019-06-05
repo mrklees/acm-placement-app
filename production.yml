@@ -1,9 +1,9 @@
 version: '3'
 
 volumes:
-  production_postgres_data: {}
-  production_postgres_data_backups: {}
-  production_traefik: {}
+  acm_placement_app_production_postgres_data: {}
+  acm_placement_app_production_postgres_data_backups: {}
+  acm_placement_app_production_traefik_vol: {}
 
 services:
   django: &django
@@ -25,8 +25,8 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: acm_placement_app_production_postgres
     volumes:
-      - production_postgres_data:/var/lib/postgresql/data
-      - production_postgres_data_backups:/backups
+      - acm_placement_app_production_postgres_data:/var/lib/postgresql/data
+      - acm_placement_app_production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
 
@@ -38,7 +38,7 @@ services:
     depends_on:
       - django
     volumes:
-      - production_traefik:/etc/traefik/acme
+      - acm_placement_app_production_traefik_vol:/etc/traefik/acme
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
@@ -70,7 +70,7 @@ services:
     env_file:
       - ./.envs/.production/.django
     volumes:
-      - production_postgres_data_backups:/backups
+      - acm_placement_app_production_postgres_data_backups:/backups
 
   pgadmin:
     image: dpage/pgadmin4
