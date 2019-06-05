@@ -40,19 +40,16 @@ def create_params_csv(fs, placementrequest):
 
 
 def prepare_commutes_file(fs, placementrequest, commute_procedure_csv_string):
-    commutes_reference_file_name = None
-    if commute_procedure_csv_string:
-        with io.StringIO() as f:
-            f.write(commute_procedure_csv_string)
-            commutes_reference_file_name = fs.save("commutes_reference_file.csv", f)
-
-    elif placementrequest.commutes_reference_file:
+    if placementrequest.commutes_reference_file:
         commutes_reference_file = placementrequest.commutes_reference_file.file
         commutes_reference_file_name = fs.save("commutes_reference_file.csv", commutes_reference_file)
+    else:
+        with io.StringIO() as f:
+            if commute_procedure_csv_string:
+                f.write(commute_procedure_csv_string)
+            commutes_reference_file_name = fs.save("commutes_reference_file.csv", f)
 
-    if commutes_reference_file_name:
-        return fs.url(commutes_reference_file_name)
-    return None
+    return fs.url(commutes_reference_file_name)
 
 
 def prepare_workspace(placementrequest, run_timestamp, acm_df, commute_procedure_csv_string):

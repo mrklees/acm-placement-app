@@ -58,6 +58,8 @@ class PlacementRequestWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         placementrequest = get_placementrequest_instance_from_form_list(form_list, commit=False)
         placementrequest.requested_by = self.request.user
+        if not placementrequest.calc_commutes:
+            placementrequest.commute_factor = 0
         placementrequest.save()
         return HttpResponseRedirect(reverse('placements:run', kwargs={'id': placementrequest.id}))
 

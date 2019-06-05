@@ -79,6 +79,7 @@ def run_procedure(placements_request_id, started):
         placementrequest.errors = ""
     except ExecutionHalted as e:
         placementrequest.errors = str(e)
+        placementrequest.completed = timezone.now()
     finally:
         clean_workspace(run_timestamp)
 
